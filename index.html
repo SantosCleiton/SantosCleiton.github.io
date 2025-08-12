@@ -110,15 +110,15 @@
   </div>
 
   <script>
-    // Permitir apenas letras e espaços no nome
+    // Nome com letras e espaços somente
     document.getElementById('txtCardAlias').addEventListener('input', function(e) {
       e.target.value = e.target.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, '');
     });
 
-    // Máscara do número do cartão (máximo 16 dígitos)
+    // Máscara do cartão (máx 16 dígitos)
     document.getElementById('txtCardNumber').addEventListener('input', function(e) {
       let cursorPos = e.target.selectionStart;
-      let rawValue = e.target.value.replace(/\D/g, '').slice(0, 16); // Limita a 16 dígitos
+      let rawValue = e.target.value.replace(/\D/g, '').slice(0,16);
       let maskedValue = rawValue.replace(/(.{4})/g, '$1 ').trim();
       e.target.value = maskedValue;
 
@@ -126,12 +126,11 @@
       e.target.selectionStart = e.target.selectionEnd = cursorPos + adjustment;
     });
 
-    // Máscara para valor em moeda brasileira
+    // Máscara para valor em moeda BR
     document.getElementById('txtAmount').addEventListener('input', function(e) {
       let value = e.target.value.replace(/\D/g, '');
       value = (parseInt(value, 10) || 0) / 100;
-      value = value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      e.target.value = 'R$ ' + value;
+      e.target.value = value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2, style: 'currency', currency: 'BRL' });
     });
 
     Safe2Pay.Mpi.addEventListener("onReady", function() {
@@ -148,7 +147,7 @@
     Safe2Pay.Mpi.Init(config, 0);
 
     document.getElementById("btnSendOrder").addEventListener("click", function() {
-      // Remove R$, espaços e pontos, troca vírgula por ponto
+      // Remove tudo que não seja número ou vírgula
       let rawValue = document.getElementById('txtAmount').value.replace(/[^\d,]/g, '').replace(',', '.');
       let amount = parseFloat(rawValue);
 
