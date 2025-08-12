@@ -106,7 +106,7 @@
       <option value="35">2035</option>
     </select>
 
-    <input id="btnSendOrder" value="Autenticar no 3DS" type="button" disabled />
+    <input id="btnSendOrder" value="Processar Pagamento" type="button" disabled />
   </div>
 
   <script>
@@ -148,8 +148,10 @@
     Safe2Pay.Mpi.Init(config, 0);
 
     document.getElementById("btnSendOrder").addEventListener("click", function() {
-      let amountStr = document.getElementById('txtAmount').value.replace(/[R$\s.]/g, '').replace(',', '.');
-      let amount = parseFloat(amountStr);
+      // Remove R$, espaços e pontos, troca vírgula por ponto
+      let rawValue = document.getElementById('txtAmount').value.replace(/[^\d,]/g, '').replace(',', '.');
+      let amount = parseFloat(rawValue);
+
       if (isNaN(amount) || amount <= 0) {
         alert('Informe um valor válido para a compra.');
         return;
