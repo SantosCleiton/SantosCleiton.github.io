@@ -156,14 +156,15 @@
     Safe2Pay.Mpi.Init(config, 0);
 
     document.getElementById("btnSendOrder").addEventListener("click", function() {
-      // Captura valor digitado e converte para número
+      // Captura valor digitado e converte para centavos
       let amountStr = document.getElementById('txtAmount').value.replace(/[^\d,]/g, '').replace(',', '.');
       let amount = parseFloat(amountStr) || 0;
+      let amountInCents = Math.round(amount * 100);
 
-      // Inicializa Safe2Pay com valor correto
-      Safe2Pay.Mpi.Init(config, amount);
+      // Inicializa Safe2Pay com valor correto em centavos
+      Safe2Pay.Mpi.Init(config, amountInCents);
 
-      // Monta payload com totalamount correto
+      // Monta payload com totalamount correto em centavos
       let paymentObject = {
         currency: "BRL",
         installments: document.getElementById('drpInstallments').value,
@@ -171,7 +172,7 @@
         cardexpirationmonth: document.getElementById('drpCardExpirationMonth').value,
         cardexpirationyear: document.getElementById('drpCardExpirationYear').value,
         cardalias: document.getElementById('txtCardAlias').value,
-        totalamount: amount
+        totalamount: amountInCents
       };
 
       console.log("Payload enviado:", paymentObject);
