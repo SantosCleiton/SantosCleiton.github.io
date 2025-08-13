@@ -114,6 +114,11 @@
         }
 
         let amountInCents = Math.round(amount * 100);
+
+        // Log para conferir o que está indo
+        console.log("Valor digitado:", rawValue);
+        console.log("Valor convertido em centavos:", amountInCents);
+
         Safe2Pay.Mpi.Init(config, amountInCents);
 
         let paymentObject = {
