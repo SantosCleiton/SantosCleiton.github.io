@@ -1,175 +1,132 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="UTF-8">
-  <title>Exemplo 3DS</title>
-  <script src="https://static.safe2pay.dev/scripts/verify_3DS2.min.js"></script>
-  <style>
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background-color: #f4f4f4;
-      font-family: Arial, sans-serif;
-    }
-    .form-container {
-      background: #fff;
-      padding: 20px 30px;
-      border-radius: 10px;
-      box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
-      width: 320px;
-    }
-    .form-container label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-    }
-    .form-container input, 
-    .form-container select {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      box-sizing: border-box;
-    }
-    #btnSendOrder {
-      margin-top: 20px;
-      width: 100%;
-      padding: 10px;
-      background-color: #4CAF50;
-      border: none;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-    #btnSendOrder:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
-  </style>
-</head>
-<body>
+  <head>
+    <script src="https://static.safe2pay.dev/scripts/verify_3DS2.min.js"></script>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        font-family: Arial, sans-serif;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+        width: 300px;
+        gap: 10px;
+      }
+      input, select, button {
+        padding: 8px;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <form>
+      <h2>Exemplo 3DS</h2>
 
-  <div class="form-container">
-    <h2>Exemplo 3DS</h2>
+      <label for="txtCardAlias">Nome impresso no cartão</label>
+      <input type="text" id="txtCardAlias" placeholder="Nome impresso no cartão" oninput="this.value = this.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, '')" />
 
-    <label for="txtCardAlias">Nome impresso no cartão</label>
-    <input type="text" id="txtCardAlias" placeholder="Nome impresso no cartão" />
+      <label for="txtCardNumber">Número do cartão</label>
+      <input type="text" id="txtCardNumber" placeholder="Número do cartão" maxlength="19" />
 
-    <label for="txtCardNumber">Número do cartão</label>
-    <input type="text" id="txtCardNumber" placeholder="Número do cartão" />
+      <label for="txtAmount">Valor da compra</label>
+      <input type="text" id="txtAmount" placeholder="Digite o valor" />
 
-    <label for="txtAmount">Valor da compra</label>
-    <input type="text" id="txtAmount" placeholder="R$ 0,00" />
+      <label for="drpInstallments">Parcelas</label>
+      <select id="drpInstallments">
+        <option value="01">1x</option>
+        <option value="02">2x</option>
+        <option value="03">3x</option>
+        <option value="04">4x</option>
+        <option value="05">5x</option>
+        <option value="06">6x</option>
+        <option value="07">7x</option>
+        <option value="08">8x</option>
+        <option value="09">9x</option>
+        <option value="10">10x</option>
+        <option value="11">11x</option>
+        <option value="12">12x</option>
+      </select>
 
-    <label for="drpInstallments">Parcelas</label>
-    <select id="drpInstallments">
-      <option value="01">1x</option>
-      <option value="02">2x</option>
-      <option value="03">3x</option>
-      <option value="04">4x</option>
-      <option value="05">5x</option>
-      <option value="06">6x</option>
-      <option value="07">7x</option>
-      <option value="08">8x</option>
-      <option value="09">9x</option>
-      <option value="10">10x</option>
-      <option value="11">11x</option>
-      <option value="12">12x</option>
-    </select>
+      <label for="drpCardExpirationMonth">Mês de Vencimento</label>
+      <select id="drpCardExpirationMonth">
+        <option value="01">Janeiro</option>
+        <option value="02">Fevereiro</option>
+        <option value="03">Março</option>
+        <option value="04">Abril</option>
+        <option value="05">Maio</option>
+        <option value="06">Junho</option>
+        <option value="07">Julho</option>
+        <option value="08">Agosto</option>
+        <option value="09">Setembro</option>
+        <option value="10">Outubro</option>
+        <option value="11">Novembro</option>
+        <option value="12">Dezembro</option>
+      </select>
 
-    <label for="drpCardExpirationMonth">Mês de Vencimento</label>
-    <select id="drpCardExpirationMonth">
-      <option value="01">Janeiro</option>
-      <option value="02">Fevereiro</option>
-      <option value="03">Março</option>
-      <option value="04">Abril</option>
-      <option value="05">Maio</option>
-      <option value="06">Junho</option>
-      <option value="07">Julho</option>
-      <option value="08">Agosto</option>
-      <option value="09">Setembro</option>
-      <option value="10">Outubro</option>
-      <option value="11">Novembro</option>
-      <option value="12">Dezembro</option>
-    </select>
+      <label for="drpCardExpirationYear">Ano de Vencimento</label>
+      <select id="drpCardExpirationYear">
+        <option value="25">2025</option>
+        <option value="26">2026</option>
+        <option value="27">2027</option>
+        <option value="28">2028</option>
+        <option value="29">2029</option>
+        <option value="30">2030</option>
+        <option value="31">2031</option>
+        <option value="32">2032</option>
+        <option value="33">2033</option>
+        <option value="34">2034</option>
+        <option value="35">2035</option>
+      </select>
 
-    <label for="drpCardExpirationYear">Ano de Vencimento</label>
-    <select id="drpCardExpirationYear">
-      <option value="25">2025</option>
-      <option value="26">2026</option>
-      <option value="27">2027</option>
-      <option value="28">2028</option>
-      <option value="29">2029</option>
-      <option value="30">2030</option>
-      <option value="31">2031</option>
-      <option value="32">2032</option>
-      <option value="33">2033</option>
-      <option value="34">2034</option>
-      <option value="35">2035</option>
-    </select>
+      <input id="btnSendOrder" value="Processar Pagamento" type="button" disabled />
+    </form>
 
-    <input id="btnSendOrder" value="Processar Pagamento" type="button" disabled="disabled" />
-  </div>
+    <script>
+      // Máscara para número do cartão (máx. 16 dígitos)
+      document.getElementById('txtCardNumber').addEventListener('input', function(e) {
+        let rawValue = e.target.value.replace(/\D/g, '').slice(0, 16);
+        e.target.value = rawValue.replace(/(.{4})/g, '$1 ').trim();
+      });
 
-  <script>
-    // Permitir apenas letras e espaços no nome
-    document.getElementById('txtCardAlias').addEventListener('input', function(e) {
-      e.target.value = e.target.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, '');
-    });
+      Safe2Pay.Mpi.addEventListener("onReady", function() {
+        document.getElementById("btnSendOrder").disabled = false;
+      });
 
-    // Máscara para número do cartão (máx. 16 dígitos)
-    document.getElementById('txtCardNumber').addEventListener('input', function(e) {
-      let cursorPos = e.target.selectionStart;
-      let rawValue = e.target.value.replace(/\D/g, '').slice(0, 16);
-      let maskedValue = rawValue.replace(/(.{4})/g, '$1 ').trim();
-      e.target.value = maskedValue;
-
-      let adjustment = maskedValue.charAt(cursorPos - 1) === ' ' && e.inputType === 'insertText' ? 1 : 0;
-      e.target.selectionStart = e.target.selectionEnd = cursorPos + adjustment;
-    });
-
-    // Máscara para valor (R$)
-    document.getElementById('txtAmount').addEventListener('input', function(e) {
-      let value = e.target.value.replace(/\D/g, '');
-      value = (parseInt(value, 10) / 100).toFixed(2) + '';
-      value = value.replace('.', ',');
-      value = 'R$ ' + value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-      e.target.value = value;
-    });
-
-    Safe2Pay.Mpi.addEventListener("onReady", function(e) {
-      document.getElementById("btnSendOrder").disabled = false;
-    });
-
-    var config = {
-      IsEnabled: true,
-      IsSandbox: true,
-      IsDebug: true,
-      IsChallengeSuppressed: false
-    };
-
-    document.getElementById("btnSendOrder").addEventListener("click", function() {
-      let rawValue = document.getElementById('txtAmount').value.replace(/[^\d,]/g, '').replace(',', '.');
-      let amount = parseFloat(rawValue);
-      let amountInCents = Math.round(amount * 100);
-
-      Safe2Pay.Mpi.Init(config, amountInCents);
-
-      let paymentObject = {
-        currency: "BRL",
-        installments: document.getElementById('drpInstallments').value,
-        cardnumber: document.getElementById('txtCardNumber').value,
-        cardexpirationmonth: document.getElementById('drpCardExpirationMonth').value,
-        cardexpirationyear: document.getElementById('drpCardExpirationYear').value,
-        cardalias: document.getElementById('txtCardAlias').value
+      var config = {
+        IsEnabled: true,
+        IsSandbox: true,
+        IsDebug: true,
+        IsChallengeSuppressed: false
       };
-      Safe2Pay.Mpi.Checkout(paymentObject);
-    });
-  </script>
 
-</body>
+      document.getElementById("btnSendOrder").addEventListener("click", function() {
+        let rawValue = document.getElementById('txtAmount').value;
+        rawValue = rawValue.replace(/[^\d.,]/g, '').replace(',', '.');
+
+        let amount = parseFloat(rawValue);
+        if (isNaN(amount)) {
+          alert("Valor inválido. Digite um número.");
+          return;
+        }
+
+        let amountInCents = Math.round(amount * 100);
+        Safe2Pay.Mpi.Init(config, amountInCents);
+
+        let paymentObject = {
+          currency: "BRL",
+          installments: document.getElementById('drpInstallments').value,
+          cardnumber: document.getElementById('txtCardNumber').value,
+          cardexpirationmonth: document.getElementById('drpCardExpirationMonth').value,
+          cardexpirationyear: document.getElementById('drpCardExpirationYear').value,
+          cardalias: document.getElementById('txtCardAlias').value
+        };
+
+        Safe2Pay.Mpi.Checkout(paymentObject);
+      });
+    </script>
+  </body>
 </html>
