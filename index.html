@@ -145,18 +145,28 @@
       });
     }
 
-    // Inicializa Safe2Pay
+    // Configuração padrão
     var config = {
       IsEnabled: true,
       IsSandbox: true,
       IsDebug: true,
       IsChallengeSuppressed: false
     };
-    Safe2Pay.Mpi.Init(config, 0);
 
-    // Envia pagamento
+    var Amount = 0; // valor inicial
+
+    // Inicializa com valor 0 (será atualizado antes do pagamento)
+    Safe2Pay.Mpi.Init(config, Amount);
+
+    // Evento do botão para enviar o pagamento
     document.getElementById("btnSendOrder").addEventListener("click", function() {
-      let amount = document.getElementById('txtAmount').value;
+      // Pega o valor do input e converte para número
+      let amountStr = document.getElementById('txtAmount').value.replace(/\./g, '').replace(',', '.');
+      Amount = parseFloat(amountStr) || 0;
+
+      // Atualiza a inicialização com o valor digitado
+      Safe2Pay.Mpi.Init(config, Amount);
+
       let paymentObject = {
         currency: "BRL",
         installments: document.getElementById('drpInstallments').value,
@@ -164,8 +174,9 @@
         cardexpirationmonth: document.getElementById('drpCardExpirationMonth').value,
         cardexpirationyear: document.getElementById('drpCardExpirationYear').value,
         cardalias: document.getElementById('txtCardAlias').value,
-        totalamount: amount // valor exatamente como o usuário digitou
+        totalamount: Amount
       };
+
       console.log("Payload enviado:", paymentObject);
       Safe2Pay.Mpi.Checkout(paymentObject);
     });
