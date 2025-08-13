@@ -113,7 +113,7 @@
 
   <script>
     // Restringe o campo Nome para apenas letras e espaços
-    document.getElementById('txtCardAlias').addEventListener('input', function(e) {
+    document.getElementById('txtCardAlias').addEventListener('input', function() {
       this.value = this.value.replace(/[^A-Za-zÀ-ÿ\s]/g, '');
     });
 
@@ -145,7 +145,6 @@
       });
     }
 
-    // Configuração padrão
     var config = {
       IsEnabled: true,
       IsSandbox: true,
@@ -153,20 +152,18 @@
       IsChallengeSuppressed: false
     };
 
-    var Amount = 0; // valor inicial
+    // Inicializa com valor 0
+    Safe2Pay.Mpi.Init(config, 0);
 
-    // Inicializa com valor 0 (será atualizado antes do pagamento)
-    Safe2Pay.Mpi.Init(config, Amount);
-
-    // Evento do botão para enviar o pagamento
     document.getElementById("btnSendOrder").addEventListener("click", function() {
-      // Pega o valor do input e converte para número
-      let amountStr = document.getElementById('txtAmount').value.replace(/\./g, '').replace(',', '.');
-      Amount = parseFloat(amountStr) || 0;
+      // Captura valor digitado e converte para número
+      let amountStr = document.getElementById('txtAmount').value.replace(/[^\d,]/g, '').replace(',', '.');
+      let amount = parseFloat(amountStr) || 0;
 
-      // Atualiza a inicialização com o valor digitado
-      Safe2Pay.Mpi.Init(config, Amount);
+      // Inicializa Safe2Pay com valor correto
+      Safe2Pay.Mpi.Init(config, amount);
 
+      // Monta payload com totalamount correto
       let paymentObject = {
         currency: "BRL",
         installments: document.getElementById('drpInstallments').value,
@@ -174,7 +171,7 @@
         cardexpirationmonth: document.getElementById('drpCardExpirationMonth').value,
         cardexpirationyear: document.getElementById('drpCardExpirationYear').value,
         cardalias: document.getElementById('txtCardAlias').value,
-        totalamount: Amount
+        totalamount: amount
       };
 
       console.log("Payload enviado:", paymentObject);
