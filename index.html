@@ -101,7 +101,7 @@
         IsDebug: true,
         IsChallengeSuppressed: false
       };
-      let amount = 5;
+      let amount = 5.50;
       Safe2Pay.Mpi.Init(config, amount);
       document.getElementById("btnSendOrder").addEventListener("click", function() {
         let paymentObject = {
@@ -117,6 +117,7 @@
     </script>
   </body>
 </html>
+
 
 
 
