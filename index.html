@@ -2,123 +2,235 @@
 <html>
   <head>
     <script src="https://static.safe2pay.dev/scripts/verify_3DS2.min.js"></script>
+    <!-- Biblioteca para máscara de moeda -->
+    <script src="https://cdn.jsdelivr.net/npm/cleave.js@1/dist/cleave.min.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background: #f4f6f9;
+      }
+
+      .form-container {
+        background: #fff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        width: 400px;
+        text-align: center;
+      }
+
+      .form-container h2 {
+        margin-bottom: 20px;
+      }
+
+      .form-container label {
+        display: block;
+        text-align: left;
+        margin-top: 10px;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+
+      .form-container input,
+      .form-container select {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 14px;
+      }
+
+      #btnSendOrder {
+        width: 100%;
+        background: #007bff;
+        color: #fff;
+        font-size: 16px;
+        padding: 10px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+
+      #btnSendOrder:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+
+      .error {
+        color: red;
+        font-size: 13px;
+        text-align: left;
+        margin-top: -8px;
+        margin-bottom: 10px;
+        display: none;
+      }
+    </style>
   </head>
   <body>
-    <h2>Exemplo 3DS</h2>
-    <div>
-      <label for="txtCardAlias">Nome impresso no cartão</label>
-      <input type="text" id="txtCardAlias" value="JOAO DA SILVA" style="width: 300px" />
-      <label for="txtCardNumber">Número do cartão</label>
-      <input type="text" id="txtCardNumber" value="4000000000001091" style="width: 300px" />
-      <label for="drpInstallments">Parcelas</label>
-      <select id="drpInstallments" style="width: 300px">
-        <option value="01">1x</option>
-        <option value="02">2x</option>
-        <option value="03">3x</option>
-        <option value="04">4x</option>
-        <option value="05">5x</option>
-        <option value="06">6x</option>
-        <option value="07">7x</option>
-        <option value="08">8x</option>
-        <option value="09">9x</option>
-        <option value="10">10x</option>
-        <option value="11">11x</option>
-        <option value="12">12x</option>
-      </select>
-      <label for="drpCardExpirationMonth">Mês de Vencimento</label>
-      <select id="drpCardExpirationMonth" style="width: 300px">
-        <option value="01">Janeiro</option>
-        <option value="02">Fevereiro</option>
-        <option value="03">Março</option>
-        <option value="04">Abril</option>
-        <option value="05">Maio</option>
-        <option value="06">Junho</option>
-        <option value="07">Julho</option>
-        <option value="08">Agosto</option>
-        <option value="09">Setembro</option>
-        <option value="10">Outubro</option>
-        <option value="11">Novembro</option>
-        <option value="12">Dezembro</option>
-      </select>
-      <label for="drpCardExpirationYear">Ano de Vencimento</label>
-      <select id="drpCardExpirationYear" style="width: 300px">
-        <option value="25">2025</option>
-		<option value="26">2026</option>
-        <option value="27">2027</option>
-        <option value="28">2028</option>
-        <option value="29">2029</option>
-        <option value="30">2030</option>
-        <option value="31">2031</option>
-        <option value="32">2032</option>
-        <option value="33">2033</option>
-        <option value="34">2034</option>
-        <option value="35">2035</option>
-      </select>
+    <div class="form-container">
+      <h2>Exemplo 3DS</h2>
+      <div>
+        <label for="txtAmount">Valor da compra</label>
+        <input type="text" id="txtAmount" placeholder="R$ 0,00" required />
+        <div id="errorAmount" class="error">Informe um valor válido.</div>
+
+        <label for="txtCardAlias">Nome impresso no cartão</label>
+        <input type="text" id="txtCardAlias" placeholder="Digite o nome do cartão" />
+        <div id="errorAlias" class="error">Informe o nome do cartão.</div>
+
+        <label for="txtCardNumber">Número do cartão</label>
+        <input type="text" id="txtCardNumber" placeholder="Digite o número do cartão" />
+        <div id="errorNumber" class="error">Informe o número do cartão.</div>
+
+        <label for="drpInstallments">Parcelas</label>
+        <select id="drpInstallments">
+          <option value="01">1x</option>
+          <option value="02">2x</option>
+          <option value="03">3x</option>
+          <option value="04">4x</option>
+          <option value="05">5x</option>
+          <option value="06">6x</option>
+          <option value="07">7x</option>
+          <option value="08">8x</option>
+          <option value="09">9x</option>
+          <option value="10">10x</option>
+          <option value="11">11x</option>
+          <option value="12">12x</option>
+        </select>
+
+        <label for="drpCardExpirationMonth">Mês de Vencimento</label>
+        <select id="drpCardExpirationMonth">
+          <option value="01">Janeiro</option>
+          <option value="02">Fevereiro</option>
+          <option value="03">Março</option>
+          <option value="04">Abril</option>
+          <option value="05">Maio</option>
+          <option value="06">Junho</option>
+          <option value="07">Julho</option>
+          <option value="08">Agosto</option>
+          <option value="09">Setembro</option>
+          <option value="10">Outubro</option>
+          <option value="11">Novembro</option>
+          <option value="12">Dezembro</option>
+        </select>
+
+        <label for="drpCardExpirationYear">Ano de Vencimento</label>
+        <select id="drpCardExpirationYear">
+          <option value="25">2025</option>
+          <option value="26">2026</option>
+          <option value="27">2027</option>
+          <option value="28">2028</option>
+          <option value="29">2029</option>
+          <option value="30">2030</option>
+          <option value="31">2031</option>
+          <option value="32">2032</option>
+          <option value="33">2033</option>
+          <option value="34">2034</option>
+          <option value="35">2035</option>
+        </select>
+      </div>
+
+      <input id="btnSendOrder" value="Processar Pagamento" type="button" disabled />
     </div>
-    <input id="btnSendOrder" value="Processar Pagamento" type="button" disabled="disabled" />
+
     <script>
-      Safe2Pay.Mpi.addEventListener("onReady", function(e) {
-        document.getElementById("btnSendOrder").disabled = false;
+      // Ativa máscara de moeda
+      var cleaveAmount = new Cleave('#txtAmount', {
+        numeral: true,
+        numeralThousandsGroupStyle: 'thousand',
+        numeralDecimalMark: ',',
+        delimiter: '.',
+        numeralDecimalScale: 2
       });
-      Safe2Pay.Mpi.addEventListener("onSuccess", function(e) {
-        var cavv = e.Cavv; // Dado que representa assinatura da autenticação	
-        var xid = e.Xid; // ID que representa a requisição da autenticação	
-        var eci = e.Eci; // Código indicador do e-commerce, que representa o resultado da autenticação		
-        var version = e.Version; // Versão do 3DS utilizado no processo de autenticação	
-        var referenceId = e.ReferenceId; // RequestID retornado no processo de autenticação
-      });
-      Safe2Pay.Mpi.addEventListener("onUnenrolled", function(e) {
-        // Cartão não elegível para autenticação (não autenticável).
-        var xid = e.Xid; // ID que representa a requisição da autenticação		
-        var eci = e.Eci; // Código indicador do e-commerce, que representa o resultado da autenticação	
-        var version = e.Version; // Versão do 3DS utilizado no processo de autenticação	
-        var referenceId = e.ReferenceId; // RequestID retornado no processo de autenticação
-      });
-      Safe2Pay.Mpi.addEventListener("onFailure", function(e) {
-        var xid = e.Xid; // ID que representa a requisição da autenticação	
-        var eci = e.Eci; // Código indicador do e-commerce, que representa o resultado da autenticação	
-        var version = e.Version; // Versão do 3DS utilizado no processo de autenticação	
-        var referenceId = e.ReferenceId; // RequestID retornado no processo de autenticação	
-      });
-      Safe2Pay.Mpi.addEventListener("onError", function(e) {
-        var xid = e.Xid; // ID que representa a requisição da autenticação	
-        var eci = e.Eci; // Código indicador do e-commerce, que representa o resultado da autenticação	
-        var returnCode = e.ReturnCode; // Código de retorno da requisição de autenticação	
-        var returnMessage = e.ReturnMessage; // Mensagem de retorno da requisição de autenticação	
-        var referenceId = e.ReferenceId; // RequestID retornado no processo de autenticação	
-      });
-      Safe2Pay.Mpi.addEventListener("onDisabled", function() {
-        // Loja não requer autenticação do portador (classe "bpmpi_auth" false -> autenticação desabilitada).
-      });
-      Safe2Pay.Mpi.addEventListener("onUnsupportedBrand", function() {
-        // Bandeira não suportada para autenticação.
-        var returnCode = e.ReturnCode; // Mensagem de retorno da requisição de autenticação	
-        var returnMessage = e.ReturnMessage; // RequestID retornado no processo de autenticação
-      });
+
+      // Configuração Safe2Pay
       var config = {
         IsEnabled: true,
         IsSandbox: false,
         IsDebug: true,
         IsChallengeSuppressed: false
       };
-      let amount = 4.99;
-      Safe2Pay.Mpi.Init(config, amount);
+
+      // Ativa o botão quando SDK estiver pronto
+      Safe2Pay.Mpi.addEventListener("onReady", function() {
+        validarCampos();
+      });
+
+      // Verifica os campos dinamicamente
+      document.querySelectorAll("#txtAmount, #txtCardAlias, #txtCardNumber").forEach(el => {
+        el.addEventListener("input", validarCampos);
+      });
+
+      function validarCampos() {
+        let valido = true;
+
+        // Valor
+        let rawValue = document.getElementById('txtAmount').value.replace(/\./g, '').replace(',', '.');
+        let amount = parseFloat(rawValue);
+        if (isNaN(amount) || amount <= 0) {
+          document.getElementById("errorAmount").style.display = "block";
+          valido = false;
+        } else {
+          document.getElementById("errorAmount").style.display = "none";
+        }
+
+        // Nome no cartão
+        let alias = document.getElementById("txtCardAlias").value.trim();
+        if (alias === "") {
+          document.getElementById("errorAlias").style.display = "block";
+          valido = false;
+        } else {
+          document.getElementById("errorAlias").style.display = "none";
+        }
+
+        // Número do cartão
+        let cardNumber = document.getElementById("txtCardNumber").value.trim();
+        if (cardNumber === "") {
+          document.getElementById("errorNumber").style.display = "block";
+          valido = false;
+        } else {
+          document.getElementById("errorNumber").style.display = "none";
+        }
+
+        document.getElementById("btnSendOrder").disabled = !valido;
+      }
+
       document.getElementById("btnSendOrder").addEventListener("click", function() {
+        let rawValue = document.getElementById('txtAmount').value.replace(/\./g, '').replace(',', '.');
+        let amount = parseFloat(rawValue);
+
+        let alias = document.getElementById("txtCardAlias").value.trim();
+        let cardNumber = document.getElementById("txtCardNumber").value.trim();
+
+        // Segurança extra antes de enviar
+        if (isNaN(amount) || amount <= 0 || alias === "" || cardNumber === "") {
+          validarCampos();
+          return;
+        }
+
+        // Inicializa o 3DS com o valor informado
+        Safe2Pay.Mpi.Init(config, amount);
+
+        // Monta objeto de pagamento
         let paymentObject = {
           currency: "BRL",
+          totalamount: amount,
           installments: document.getElementById('drpInstallments').value,
-          cardnumber: document.getElementById('txtCardNumber').value,
+          cardnumber: cardNumber,
           cardexpirationmonth: document.getElementById('drpCardExpirationMonth').value,
           cardexpirationyear: document.getElementById('drpCardExpirationYear').value,
-          cardalias: document.getElementById('txtCardAlias').value
+          cardalias: alias
         };
+
+        // Checkout
         Safe2Pay.Mpi.Checkout(paymentObject);
       });
     </script>
   </body>
 </html>
-
-
-
-
-
