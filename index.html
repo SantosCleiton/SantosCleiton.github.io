@@ -8,12 +8,12 @@
       body {
         font-family: Arial, sans-serif;
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
         height: 100vh;
         margin: 0;
         background: #f4f6f9;
-        flex-direction: column;
       }
 
       .form-container {
@@ -64,6 +64,7 @@
         background: #e9f7ef;
         border-radius: 8px;
         width: 400px;
+        word-break: break-word;
       }
     </style>
   </head>
@@ -86,33 +87,33 @@
 
       <label>Parcelas</label>
       <select id="drpInstallments">
-        <option value="01">1x</option> 
-        <option value="02">2x</option> 
-        <option value="03">3x</option> 
-        <option value="04">4x</option> 
-        <option value="05">5x</option> 
-        <option value="06">6x</option> 
-        <option value="07">7x</option> 
-        <option value="08">8x</option> 
-        <option value="09">9x</option> 
-        <option value="10">10x</option> 
-        <option value="11">11x</option> 
+        <option value="01">1x</option>
+        <option value="02">2x</option>
+        <option value="03">3x</option>
+        <option value="04">4x</option>
+        <option value="05">5x</option>
+        <option value="06">6x</option>
+        <option value="07">7x</option>
+        <option value="08">8x</option>
+        <option value="09">9x</option>
+        <option value="10">10x</option>
+        <option value="11">11x</option>
         <option value="12">12x</option>
       </select>
 
       <label>Mês</label>
       <select id="drpCardExpirationMonth">
-        <option value="01">Janeiro</option> 
-        <option value="02">Fevereiro</option> 
-        <option value="03">Março</option> 
-        <option value="04">Abril</option> 
-        <option value="05">Maio</option> 
-        <option value="06">Junho</option> 
-        <option value="07">Julho</option> 
-        <option value="08">Agosto</option> 
-        <option value="09">Setembro</option> 
-        <option value="10">Outubro</option> 
-        <option value="11">Novembro</option> 
+        <option value="01">Janeiro</option>
+        <option value="02">Fevereiro</option>
+        <option value="03">Março</option>
+        <option value="04">Abril</option>
+        <option value="05">Maio</option>
+        <option value="06">Junho</option>
+        <option value="07">Julho</option>
+        <option value="08">Agosto</option>
+        <option value="09">Setembro</option>
+        <option value="10">Outubro</option>
+        <option value="11">Novembro</option>
         <option value="12">Dezembro</option>
       </select>
 
@@ -155,37 +156,38 @@
         IsDebug: true
       };
 
-      // SDK pronto
       Safe2Pay.Mpi.addEventListener("onReady", validarCampos);
 
-      // RESULTADO DO 3DS
+      // ✅ RESULTADO DO 3DS (CORRIGIDO)
       Safe2Pay.Mpi.addEventListener("onSuccess", function(response) {
         console.log("SUCESSO 3DS:", response);
 
         let resultDiv = document.getElementById("result");
+        resultDiv.style.display = "block";
 
-        if (response && response.ExternalAuthentication) {
-          let auth = response.ExternalAuthentication;
-
-          resultDiv.style.display = "block";
+        if (response && response.Status === "AUTHENTICATED") {
           resultDiv.innerHTML = `
-            <h3>Resultado 3DS</h3>
-            <p><b>CAVV:</b> ${auth.Cavv}</p>
-            <p><b>XID:</b> ${auth.Xid}</p>
-            <p><b>ECI:</b> ${auth.Eci}</p>
-            <p><b>Versão:</b> ${auth.Version}</p>
-            <p><b>ReferenceId:</b> ${auth.ReferenceId}</p>
+            <h3>✅ 3DS Autenticado</h3>
+            <p><b>Status:</b> ${response.Status}</p>
+            <p><b>CAVV:</b> ${response.Cavv}</p>
+            <p><b>XID:</b> ${response.Xid || "N/A"}</p>
+            <p><b>ECI:</b> ${response.Eci}</p>
+            <p><b>Versão:</b> ${response.Version}</p>
+            <p><b>TransactionId:</b> ${response.DirectoryServerTransactionId}</p>
+            <p><b>ReturnCode:</b> ${response.ReturnCode}</p>
+            <p><b>Mensagem:</b> ${response.ReturnMessage}</p>
           `;
         } else {
-          resultDiv.style.display = "block";
-          resultDiv.innerHTML = `<p>3DS concluído, mas sem dados.</p>`;
+          resultDiv.innerHTML = `
+            <h3>⚠️ 3DS Finalizado (outro status)</h3>
+            <pre>${JSON.stringify(response, null, 2)}</pre>
+          `;
         }
       });
 
-      // ERRO
       Safe2Pay.Mpi.addEventListener("onError", function(error) {
-        console.error("Erro:", error);
-        alert("Erro no 3DS");
+        console.error("Erro 3DS:", error);
+        alert("Erro na autenticação 3DS");
       });
 
       // VALIDAÇÃO
