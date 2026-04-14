@@ -207,16 +207,16 @@
         parsed.Authentication ||
         parsed;
     
-      const cavv = auth.Cavv || "N/A";
-      const xid = auth.Xid || "N/A";
-      const eci = auth.Eci || "N/A";
-      const version = auth.Version || "N/A";
+      const cavv = auth.Cavv || "null";
+      const xid = auth.Xid || "null";
+      const eci = auth.Eci || "null";
+      const version = auth.Version || "null";
     
       const referenceId =
         auth.ReferenceId ||
         auth.DirectoryServerTransactionId ||
         parsed.DirectoryServerTransactionId ||
-        "N/A";
+        "null";
     
       document.getElementById("result").style.display = "block";
       document.getElementById("result").innerHTML = `
