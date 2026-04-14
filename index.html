@@ -142,6 +142,7 @@
     <div id="result" class="result" style="display:none;"></div>
 
     <script>
+      // Máscara
       new Cleave('#txtAmount', {
         numeral: true,
         numeralDecimalMark: ',',
@@ -156,16 +157,20 @@
       };
 
       let sdkReady = false;
-      let lastAmount = 0;
+
+      // 🔥 Inicializa o 3DS ao carregar
+      window.onload = function () {
+        console.log("Inicializando 3DS...");
+        Safe2Pay.Mpi.Init(config, 1);
+      };
 
       // SDK pronto
       Safe2Pay.Mpi.addEventListener("onReady", function () {
         console.log("SDK 3DS pronto");
         sdkReady = true;
-        validarCampos();
       });
 
-      // SUCESSO 3DS
+      // SUCESSO
       Safe2Pay.Mpi.addEventListener("onSuccess", function (response) {
         console.log("SUCESSO 3DS:", response);
 
@@ -185,15 +190,9 @@
         `;
       });
 
-      // ERRO (corrigido)
+      // ERRO
       Safe2Pay.Mpi.addEventListener("onError", function (error) {
         console.error("Erro 3DS:", error);
-
-        if (!sdkReady) {
-          console.warn("Ignorando erro - SDK não pronto ainda");
-          return;
-        }
-
         alert("Erro na autenticação 3DS");
       });
 
@@ -223,7 +222,7 @@
           valido = false;
         } else errorNumber.style.display = "none";
 
-        btnSendOrder.disabled = !valido || !sdkReady;
+        btnSendOrder.disabled = !valido;
       }
 
       // CLICK
@@ -236,7 +235,7 @@
         let raw = txtAmount.value.replace(/\./g, '').replace(',', '.');
         let amount = parseFloat(raw);
 
-        // inicializa corretamente
+        // reinicializa com valor correto
         Safe2Pay.Mpi.Init(config, amount);
 
         let paymentObject = {
@@ -251,7 +250,6 @@
 
         console.log("Enviando para 3DS:", paymentObject);
 
-        // pequeno delay garante estabilidade do Init
         setTimeout(() => {
           Safe2Pay.Mpi.Checkout(paymentObject);
         }, 300);
