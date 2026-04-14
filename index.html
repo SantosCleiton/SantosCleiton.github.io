@@ -208,12 +208,23 @@
         `;
       });
 
-      Safe2Pay.Mpi.addEventListener("onError", function (err) {
-        console.error("3DS ERROR:", err);
-
+        Safe2Pay.Mpi.addEventListener("onError", function (err) {
+        console.warn("Evento onError recebido:", err);
+      
+        // 🔥 Ignora erro antes da interação
         if (!userInteracted) return;
-
-        alert("Erro na autenticação 3DS");
+      
+        // 🔥 Ignora erros transitórios do fluxo 3DS
+        if (!err || !err.ReturnCode) {
+          console.warn("Erro ignorado (sem ReturnCode - fluxo interno do SDK)");
+          return;
+        }
+      
+        // 🔥 Só trata erro real
+        if (err.ReturnCode !== "100") {
+          alert("Erro real na autenticação 3DS");
+          console.error("Erro real 3DS:", err);
+        }
       });
 
       // =========================
