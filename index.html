@@ -203,10 +203,10 @@
         div.innerHTML = `
           <h3>✅ 3DS Autenticado</h3>
           <p><b>Cavv:</b> ${response.Cavv}</p>
-          <p><b>Xid:</b> ${response.Xid || "N/A"}</p>
+          <p><b>Xid:</b> ${response.Xid || "null"}</p>
           <p><b>Eci:</b> ${response.Eci}</p>
           <p><b>Version:</b> ${response.Version}</p>
-          <p><b>TransactionId:</b> ${response.DirectoryServerTransactionId}</p>
+          <p><b>ReferenceId:</b> ${response.DirectoryServerTransactionId}</p>
         `;
       });
 
