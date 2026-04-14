@@ -139,7 +139,6 @@
       <input id="btnSendOrder" type="button" value="Pagar" disabled />
     </div>
 
-    <!-- RESULTADO -->
     <div id="result" class="result" style="display:none;"></div>
 
     <script>
@@ -156,37 +155,45 @@
         IsDebug: true
       };
 
-      Safe2Pay.Mpi.addEventListener("onReady", validarCampos);
+      let sdkReady = false;
+      let lastAmount = 0;
 
-      // ✅ RESULTADO DO 3DS (CORRIGIDO)
-      Safe2Pay.Mpi.addEventListener("onSuccess", function(response) {
+      // SDK pronto
+      Safe2Pay.Mpi.addEventListener("onReady", function () {
+        console.log("SDK 3DS pronto");
+        sdkReady = true;
+        validarCampos();
+      });
+
+      // SUCESSO 3DS
+      Safe2Pay.Mpi.addEventListener("onSuccess", function (response) {
         console.log("SUCESSO 3DS:", response);
 
         let resultDiv = document.getElementById("result");
         resultDiv.style.display = "block";
 
-        if (response && response.Status === "AUTHENTICATED") {
-          resultDiv.innerHTML = `
-            <h3>✅ 3DS Autenticado</h3>
-            <p><b>Status:</b> ${response.Status}</p>
-            <p><b>CAVV:</b> ${response.Cavv}</p>
-            <p><b>XID:</b> ${response.Xid || "N/A"}</p>
-            <p><b>ECI:</b> ${response.Eci}</p>
-            <p><b>Versão:</b> ${response.Version}</p>
-            <p><b>TransactionId:</b> ${response.DirectoryServerTransactionId}</p>
-            <p><b>ReturnCode:</b> ${response.ReturnCode}</p>
-            <p><b>Mensagem:</b> ${response.ReturnMessage}</p>
-          `;
-        } else {
-          resultDiv.innerHTML = `
-            <h3>⚠️ 3DS Finalizado (outro status)</h3>
-            <pre>${JSON.stringify(response, null, 2)}</pre>
-          `;
-        }
+        resultDiv.innerHTML = `
+          <h3>✅ Resultado 3DS</h3>
+          <p><b>Status:</b> ${response?.Status}</p>
+          <p><b>CAVV:</b> ${response?.Cavv}</p>
+          <p><b>XID:</b> ${response?.Xid || "N/A"}</p>
+          <p><b>ECI:</b> ${response?.Eci}</p>
+          <p><b>Versão:</b> ${response?.Version}</p>
+          <p><b>TransactionId:</b> ${response?.DirectoryServerTransactionId}</p>
+          <p><b>ReturnCode:</b> ${response?.ReturnCode}</p>
+          <p><b>Mensagem:</b> ${response?.ReturnMessage}</p>
+        `;
       });
 
-      Safe2Pay.Mpi.addEventListener("onError", function(error) {
+      // ERRO (corrigido)
+      Safe2Pay.Mpi.addEventListener("onError", function (error) {
         console.error("Erro 3DS:", error);
+
+        if (!sdkReady) {
+          console.warn("Ignorando erro - SDK não pronto ainda");
+          return;
+        }
+
         alert("Erro na autenticação 3DS");
       });
 
@@ -198,7 +205,7 @@
       function validarCampos() {
         let valido = true;
 
-        let raw = document.getElementById('txtAmount').value.replace(/\./g, '').replace(',', '.');
+        let raw = txtAmount.value.replace(/\./g, '').replace(',', '.');
         let amount = parseFloat(raw);
 
         if (!amount || amount <= 0) {
@@ -216,14 +223,20 @@
           valido = false;
         } else errorNumber.style.display = "none";
 
-        btnSendOrder.disabled = !valido;
+        btnSendOrder.disabled = !valido || !sdkReady;
       }
 
       // CLICK
-      btnSendOrder.addEventListener("click", function() {
+      btnSendOrder.addEventListener("click", function () {
+        if (!sdkReady) {
+          alert("3DS ainda não está pronto");
+          return;
+        }
+
         let raw = txtAmount.value.replace(/\./g, '').replace(',', '.');
         let amount = parseFloat(raw);
 
+        // inicializa corretamente
         Safe2Pay.Mpi.Init(config, amount);
 
         let paymentObject = {
@@ -236,7 +249,12 @@
           cardalias: txtCardAlias.value
         };
 
-        Safe2Pay.Mpi.Checkout(paymentObject);
+        console.log("Enviando para 3DS:", paymentObject);
+
+        // pequeno delay garante estabilidade do Init
+        setTimeout(() => {
+          Safe2Pay.Mpi.Checkout(paymentObject);
+        }, 300);
       });
     </script>
   </body>
