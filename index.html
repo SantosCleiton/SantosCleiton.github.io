@@ -193,22 +193,41 @@
       // EVENTOS 3DS
       // =========================
       Safe2Pay.Mpi.addEventListener("onSuccess", function (response) {
-        console.log("3DS SUCCESS:", response);
-
-        isProcessing3DS = false;
-
-        let div = document.getElementById("result");
-        div.style.display = "block";
-
-        div.innerHTML = `
-          <h3>✅ 3DS Autenticado</h3>
-          <p><b>Cavv:</b> ${response.Cavv}</p>
-          <p><b>Xid:</b> ${response.Xid || "null"}</p>
-          <p><b>Eci:</b> ${response.Eci}</p>
-          <p><b>Version:</b> ${response.Version}</p>
-          <p><b>ReferenceId:</b> ${response.DirectoryServerTransactionId}</p>
-        `;
-      });
+      console.log("RAW RESPONSE:", response);
+    
+      isProcessing3DS = false;
+    
+      // 🔥 força objeto real
+      const parsed = JSON.parse(JSON.stringify(response));
+    
+      console.log("PARSED RESPONSE:", parsed);
+    
+      const auth =
+        parsed.ExternalAuthentication ||
+        parsed.Authentication ||
+        parsed;
+    
+      const cavv = auth.Cavv || "N/A";
+      const xid = auth.Xid || "N/A";
+      const eci = auth.Eci || "N/A";
+      const version = auth.Version || "N/A";
+    
+      const referenceId =
+        auth.ReferenceId ||
+        auth.DirectoryServerTransactionId ||
+        parsed.DirectoryServerTransactionId ||
+        "N/A";
+    
+      document.getElementById("result").style.display = "block";
+      document.getElementById("result").innerHTML = `
+        <h3>✅ 3DS Autenticado</h3>
+        <p><b>Cavv:</b> ${cavv}</p>
+        <p><b>Xid:</b> ${xid}</p>
+        <p><b>Eci:</b> ${eci}</p>
+        <p><b>Version:</b> ${version}</p>
+        <p><b>ReferenceId:</b> ${referenceId}</p>
+      `;
+    });
 
       Safe2Pay.Mpi.addEventListener("onError", function (err) {
         console.warn("Evento onError recebido:", err);
